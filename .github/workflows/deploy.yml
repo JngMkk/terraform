@@ -49,13 +49,13 @@ jobs:
       working-directory: ${{ env.WORKING_DIR }}
 
     - name: Terraform Validate
-      run: terraform validate -no-color
+      run: terraform validate
       working-directory: ${{ env.WORKING_DIR }}
 
     - name: Terraform Plan
-      run: terraform plan -no-color
+      run: terraform plan
       working-directory: ${{ env.WORKING_DIR }}
     
     - name: Terraform Apply
-      run: terraform apply -no-color -auto-approve
+      run: terraform apply -auto-approve
       working-directory: ${{ env.WORKING_DIR }}
