@@ -23,7 +23,7 @@ jobs:
         echo Installing aws-iam-authenticator...
         mkdir ~/aws
         curl -o ~/aws/aws-iam-authenticator \
-        "https://amazon-eks.s3.${env.AWS_REGION}.amazonaws.com/\
+        "https://amazon-eks.s3.${{ env.AWS_REGION }}.amazonaws.com/\
         1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator"
         chmod +x ~/aws/aws-iam-authenticator
         sudo cp ~/aws/aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
