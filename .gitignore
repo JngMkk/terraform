@@ -13,3 +13,6 @@ ex.auto.*
 # to change depending on the environment.
 *.tfvars
 *.tfvars.json
+
+
+.DS_Store
