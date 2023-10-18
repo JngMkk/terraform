@@ -59,3 +59,10 @@ jobs:
     - name: Terraform Apply
       run: terraform apply -auto-approve
       working-directory: ${{ env.WORKING_DIR }}
+
+    - name: Upload kubeconfig file
+      uses: actions/upload-artifact@v2
+      working-directory: ${{ env.WORKING_DIR }}
+      with:
+        name: kubeconfig
+        path: kubeconfig
