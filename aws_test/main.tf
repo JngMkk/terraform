@@ -1,15 +1,16 @@
 module "aws_network" {
   source = "./modules/aws_network"
 
-  create_vpc                 = true
-  vpc_name                   = "test-vpc"
-  vpc_cidr_block             = "10.0.0.0/16"
-  public_subnet_names        = ["public-subnet-a", "public-subnet-b"]
-  public_subnet_cidr_blocks  = ["10.0.0.0/24", "10.0.10.0/24"]
-  private_subnet_names       = ["private-subnet-a", "private-subnet-b"]
-  private_subnet_cidr_blocks = ["10.0.1.0/24", "10.0.11.0/24"]
-  create_igw                 = true
-  create_ngw                 = true
+  cluster_name               = var.cluster_name
+  create_vpc                 = var.create_vpc
+  vpc_name                   = var.vpc_name
+  vpc_cidr_block             = var.vpc_cidr_block
+  public_subnet_names        = var.public_subnet_names
+  public_subnet_cidr_blocks  = var.public_subnet_cidr_blocks
+  private_subnet_names       = var.private_subnet_names
+  private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
+  create_igw                 = var.create_igw
+  create_ngw                 = var.create_ngw
 }
 
 module "aws_eks" {
@@ -18,22 +19,13 @@ module "aws_eks" {
   vpc_id                    = module.aws_network.vpc_id
   cluster_subnet_ids        = concat(module.aws_network.public_sn_ids, module.aws_network.private_sn_ids)
   node_group_subnet_ids     = module.aws_network.private_sn_ids
-  cluster_name              = "eks-cluster-test"
-  cluster_role_policy_arns  = ["arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"]
-  node_role_policy_arns     = ["arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"]
-  node_group_name           = "eks-test-node-group"
-  node_group_disk_size      = "20"
-  node_group_instance_types = ["t3.medium"]
-  node_group_scaling_config = {
-    desired_size = 1
-    min_size     = 1
-    max_size     = 3
-  }
-  sg_egress = {
-    from_port   = "0"
-    to_port     = "0"
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  kubeconfig_filename = "kubeconfig"
+  cluster_name              = var.cluster_name
+  cluster_role_policy_arns  = var.cluster_role_policy_arns
+  node_role_policy_arns     = var.node_role_policy_arns
+  node_group_name           = var.node_group_name
+  node_group_disk_size      = var.node_group_disk_size
+  node_group_instance_types = var.node_group_instance_types
+  node_group_scaling_config = var.node_group_scaling_config
+  sg_egress                 = var.sg_egress
+  kubeconfig_filename       = var.kubeconfig_filename
 }

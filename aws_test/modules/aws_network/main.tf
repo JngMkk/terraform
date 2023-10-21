@@ -1,16 +1,17 @@
 locals {
-  create_vpc = var.create_vpc
-  vpc_name   = var.vpc_name
-  vpc_id     = try(aws_vpc.vpc[0].id, "")
+  create_vpc   = var.create_vpc
+  vpc_name     = var.vpc_name
+  cluster_name = var.cluster_name
 
   len_public_subnets     = length(var.public_subnet_cidr_blocks)
   len_private_subnets    = length(var.private_subnet_cidr_blocks)
   create_public_subnets  = local.create_vpc && local.len_public_subnets > 0
   create_private_subnets = local.create_vpc && local.len_private_subnets > 0
 
+  vpc_id          = try(aws_vpc.vpc[0].id, "")
   nat_gateway_ips = try(aws_eip.eips[*].id, [])
+  public_subnets  = try(aws_subnet.public_subnets[*].id, [])
 }
-
 
 data "aws_availability_zones" "azs" {
   state = "available"
@@ -30,7 +31,8 @@ resource "aws_vpc" "vpc" {
   instance_tenancy     = var.instance_tenancy
 
   tags = {
-    Name = "${local.vpc_name}"
+    "Name"                                        = "${local.vpc_name}",
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
   }
 }
 
@@ -50,7 +52,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = local.vpc_id
 
   tags = {
-    Name = "${local.vpc_name}-igw"
+    "Name" = "${local.vpc_name}-igw"
   }
 }
 
@@ -67,7 +69,9 @@ resource "aws_subnet" "public_subnets" {
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = {
-    Name = "${local.vpc_name}-${var.public_subnet_names[count.index]}"
+    "Name"                                        = "${local.vpc_name}-${var.public_subnet_names[count.index]}"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                      = "1"
   }
 }
 
@@ -82,7 +86,7 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = {
-    Name = "${local.vpc_name}-public-rt"
+    "Name" = "${local.vpc_name}-public-rt"
   }
 }
 
@@ -101,7 +105,9 @@ resource "aws_subnet" "private_subnets" {
   availability_zone = data.aws_availability_zones.azs.names[count.index]
 
   tags = {
-    Name = "${local.vpc_name}-${var.private_subnet_names[count.index]}"
+    "Name"                                        = "${local.vpc_name}-${var.private_subnet_names[count.index]}"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"             = "1"
   }
 }
 
@@ -141,7 +147,7 @@ resource "aws_route_table" "private_route_tables" {
   }
 
   tags = {
-    Name = "${local.vpc_id}-${var.private_subnet_names[count.index]}-rt"
+    "Name" = "${local.vpc_id}-${var.private_subnet_names[count.index]}-rt"
   }
 }
 
