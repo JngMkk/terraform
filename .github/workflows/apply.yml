@@ -1,9 +1,7 @@
 name: apply tf code
 
 on:
-  create:
-    tags:
-      - v*
+  workflow_dispatch:
 
 jobs:
   build:
