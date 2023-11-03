@@ -6,12 +6,13 @@ variable "cluster_name" {
 #                                VPC                                #
 #####################################################################
 variable "create_vpc" {
-  type = bool
+  type    = bool
+  default = true
 }
 
 variable "vpc_name" {
   type    = string
-  default = "test-vpc"
+  default = "main"
 }
 
 variable "vpc_cidr_block" {
@@ -39,19 +40,23 @@ variable "instance_tenancy" {
 #                              Subnets                              #
 #####################################################################
 variable "public_subnet_names" {
-  type = list(string)
+  type    = list(string)
+  default = ["public-subnet-a", "public-subnet-b"]
 }
 
 variable "public_subnet_cidr_blocks" {
-  type = list(string)
+  type    = list(string)
+  default = ["10.0.0.0/24", "10.0.10.0/24"]
 }
 
 variable "private_subnet_names" {
-  type = list(string)
+  type    = list(string)
+  default = ["private-subnet-a", "private-subnet-b"]
 }
 
 variable "private_subnet_cidr_blocks" {
-  type = list(string)
+  type    = list(string)
+  default = ["10.0.1.0/24", "10.0.11.0/24"]
 }
 
 variable "map_public_ip_on_launch" {
