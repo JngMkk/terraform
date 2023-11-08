@@ -62,15 +62,8 @@ module "ebs_csi_driver" {
   depends_on = [module.aws_eks]
 }
 
-# module "kubernetes" {
-#   source = "./modules/kubernetes"
+module "argo_cd" {
+  source = "./modules/argo_cd"
 
-#   depends_on = [
-#     module.aws_network,
-#     module.aws_ecr,
-#     module.aws_eks,
-#     module.ingress_cotroller,
-#     module.external_dns,
-#     module.ebs_csi_driver
-#   ]
-# }
+  depends_on = [ module.ingress_cotroller, module.external_dns, module.ebs_csi_driver ]
+}
